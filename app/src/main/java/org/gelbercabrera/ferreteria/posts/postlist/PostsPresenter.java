@@ -10,6 +10,5 @@ public interface PostsPresenter {
     void onCreate();
     void onDestroy();
 
-    void likePost(Post post);
     void onEventMainThread(PostsListEvent event);
 }

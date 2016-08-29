@@ -5,6 +5,5 @@ import org.gelbercabrera.ferreteria.entities.Post;
 
 public interface OnItemClickListener {
     void onProfileClick(Post post);
-    void onFavClick(Post post);
     void onAddMessage(String email);
 }

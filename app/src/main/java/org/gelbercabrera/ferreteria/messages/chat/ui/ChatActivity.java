@@ -1,7 +1,9 @@
 package org.gelbercabrera.ferreteria.messages.chat.ui;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -18,6 +20,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -134,9 +137,27 @@ public class ChatActivity extends AppCompatActivity implements ChatView {
     @Override
     @OnClick(R.id.btnSendLocation)
     public void sendLocation() {
-        String text = "http://maps.google.com/?ll="
-                + location.getLatitude() + "," + location.getLongitude() + "&z=15";
-        chatPresenter.sendMessage(text);
+        final ChatActivity activity = this;
+        new AlertDialog.Builder(this)
+                .setTitle("Enviar ubicación")
+                .setMessage("Está seguro de que desea enviar su ubicación?")
+                .setPositiveButton("SÍ", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(location != null){
+                            String text = "http://maps.google.com/maps?&z=10&q="
+                                    + location.getLatitude() + "+" + location.getLongitude() +
+                                    "&ll="+location.getLatitude()+"+"+location.getLongitude();
+                            chatPresenter.sendMessage(text);
+                        }else{
+                            Toast.makeText(activity, "Imposible obtener la ubicación", Toast.LENGTH_SHORT);
+                        }
+                    }
+
+                })
+                .setNegativeButton("NO", null)
+                .show();
     }
 
     @Override

@@ -64,7 +64,6 @@ public class PostsAdapter extends RecyclerView.Adapter <PostsAdapter.ViewHolder>
 
 
         holder.txtDate.setText(DateManager.calculateTime(post.getDate()));
-        holder.txtFavsNum.setText(post.getLikesNum().toString());
 
         imageLoader.load(holder.imgAvatar, AvatarHelper.getAvatarUrl(post.getEmail_poster()));
 
@@ -84,34 +83,22 @@ public class PostsAdapter extends RecyclerView.Adapter <PostsAdapter.ViewHolder>
             }
         });
 
-
-        holder.imgLike.setImageResource(R.drawable.nonfavorite);
-        String email = FirebaseHelper.getInstance().getAuthUserEmail().replace(".","_");
-        if (post.getLikes() != null){
-            if(post.getLikes().containsKey(email)){
-                if(post.getLikes().get(email)){
-                    holder.imgLike.setImageResource(R.drawable.favorite);
-                }
-            }
-        }
         holder.toolbarCard.getMenu().clear();
-        holder.toolbarCard.inflateMenu(R.menu.menu_posts_item);
-        holder.toolbarCard.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_message:
-                        clickListener.onAddMessage(post.getEmail_poster());
+
+        if (!post.getEmail_poster().replace("_",".").equals(
+                FirebaseHelper.getInstance().getAuthUserEmail().replace("_","."))){
+            holder.toolbarCard.inflateMenu(R.menu.menu_posts_item);
+            holder.toolbarCard.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.action_message:
+                            clickListener.onAddMessage(post.getEmail_poster());
+                    }
+                    return true;
                 }
-                return true;
-            }
-        });
-        holder.imgLike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickListener.onFavClick(post);
-            }
-        });
+            });
+        }
         holder.imgAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -186,15 +173,11 @@ public class PostsAdapter extends RecyclerView.Adapter <PostsAdapter.ViewHolder>
         TextView txtNamePost;
         @Bind(R.id.txtDate)
         TextView txtDate;
-        @Bind(R.id.imgLike)
-        ImageView imgLike;
 
         @Bind(R.id.imageVIew)
         ImageView imageView;
         @Bind(R.id.toolbarCard)
         Toolbar toolbarCard;
-        @Bind(R.id.txtFavsNum)
-        TextView txtFavsNum;
 
         View view;
 

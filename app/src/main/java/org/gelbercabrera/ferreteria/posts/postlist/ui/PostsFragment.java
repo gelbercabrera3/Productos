@@ -22,6 +22,7 @@ import org.gelbercabrera.ferreteria.addpost.AddPostActivity;
 import org.gelbercabrera.ferreteria.messages.addchat.AddChatPresenter;
 import org.gelbercabrera.ferreteria.messages.addchat.AddChatPresenterImpl;
 import org.gelbercabrera.ferreteria.messages.addchat.ui.AddChatView;
+import org.gelbercabrera.ferreteria.messages.chat.ui.ChatActivity;
 import org.gelbercabrera.ferreteria.posts.postlist.PostsPresenter;
 import org.gelbercabrera.ferreteria.posts.postlist.PostsPresenterImpl;
 import org.gelbercabrera.ferreteria.posts.postlist.ui.adapters.OnItemClickListener;
@@ -112,11 +113,6 @@ public class PostsFragment extends Fragment implements PostsView, OnItemClickLis
     }
 
     @Override
-    public void likePost(Post post) {
-        presenter.likePost(post);
-    }
-
-    @Override
     public void onProfileClick(Post post) {
 
     }
@@ -124,11 +120,10 @@ public class PostsFragment extends Fragment implements PostsView, OnItemClickLis
     @Override
     public void onAddMessage(String email){
         addMessagePresenter.addContact(email);
-    }
-
-    @Override
-    public void onFavClick(Post post) {
-        likePost(post);
+        Intent intent = new Intent(this.getActivity(), ChatActivity.class);
+        intent.putExtra(ChatActivity.EMAIL_KEY, email);
+        intent.putExtra(ChatActivity.ONLINE_KEY, false);
+        startActivity(intent);
     }
 
     @Override

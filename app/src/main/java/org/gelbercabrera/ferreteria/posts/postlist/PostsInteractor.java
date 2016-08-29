@@ -7,5 +7,4 @@ public interface PostsInteractor {
     void subscribe();
     void unsubscribe();
     void destroyListener();
-    void likePost(Post post);
 }

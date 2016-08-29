@@ -34,6 +34,7 @@ import org.gelbercabrera.ferreteria.R;
 import org.gelbercabrera.ferreteria.entities.Post;
 import org.gelbercabrera.ferreteria.lib.domain.FirebaseHelper;
 import org.gelbercabrera.ferreteria.main.ui.MainActivity;
+import org.gelbercabrera.ferreteria.messages.chat.ui.ChatActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -79,6 +80,7 @@ public class AddPostActivity extends AppCompatActivity implements AddPostView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_post);
+        setTitle("Agregar artículo en venta");
         ButterKnife.bind(this);
         INSTANCE = this;
         setProperties();
@@ -114,56 +116,71 @@ public class AddPostActivity extends AppCompatActivity implements AddPostView {
     }
 
     public void setProperties(){
+        final AddPostActivity activity = this;
         btnAccept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Post post = new Post();
-                post.setUrlImage(null);
                 imageView.setDrawingCacheEnabled(true);
                 imageView.buildDrawingCache();
-                Bitmap bitmap = imageView.getDrawingCache();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] data = baos.toByteArray();
-                String name = editTxtName.getText().toString()+Math.random();
-                StorageReference reference = FirebaseHelper.getInstance().getImagesRef().child(name.replace(" ","").replace(".",""));
-
-                UploadTask uploadTask = reference.putBytes(data);
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                    }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-
-                    }
-                });
-                post.setUrlImage(reference.getName());
-                post.setDescripction(editTextDescription.getText().toString());
-                post.setName(editTxtName.getText().toString());
-                post.setPrice(editTextPrice.getText().toString());
-                post.setDate(new Date());
-                post.setEmail_poster(FirebaseHelper.getInstance().getAuthUserEmail().replace(".","_"));
-                post.setLikesNum(0);
-                FirebaseHelper.getInstance().getMyUserReference().child("name").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        post.setName_poster(dataSnapshot.getValue().toString());
-                        presenter.addPost(post);
-
-                    }
-
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-
-                    }
-                });
-                startActivity(new Intent(AddPostActivity.getINSTANCE(),MainActivity.class));
+                if (editTextDescription.getText().toString().isEmpty() ||
+                        editTextPrice.getText().toString().isEmpty() ||
+                        editTxtName.getText().toString().isEmpty() || imageView.getDrawingCache() == null){
+                    new android.app.AlertDialog.Builder(activity)
+                            .setTitle("Datos incompletos")
+                            .setMessage("Por favor complete todos los campos")
+                            .setPositiveButton("ACEPTAR", null)
+                            .show();
+                }else {
+                    post();
+                }
             }
         });
+    }
+
+    public void post(){
+        final Post post = new Post();
+        post.setUrlImage(null);
+
+        Bitmap bitmap = imageView.getDrawingCache();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+        String name = editTxtName.getText().toString()+Math.random();
+        StorageReference reference = FirebaseHelper.getInstance().getImagesRef().child(name.replace(" ","").replace(".",""));
+
+        UploadTask uploadTask = reference.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+
+            }
+        });
+        post.setUrlImage(reference.getName());
+        post.setDescripction(editTextDescription.getText().toString());
+        post.setName(editTxtName.getText().toString());
+        post.setPrice(editTextPrice.getText().toString());
+        post.setDate(new Date());
+        post.setEmail_poster(FirebaseHelper.getInstance().getAuthUserEmail().replace(".","_"));
+        FirebaseHelper.getInstance().getMyUserReference().child("name").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                post.setName_poster(dataSnapshot.getValue().toString());
+                presenter.addPost(post);
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+        startActivity(new Intent(AddPostActivity.getINSTANCE(),MainActivity.class));
     }
 
     @Override

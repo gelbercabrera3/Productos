@@ -25,8 +25,4 @@ public class PostsInteractorImpl implements PostsInteractor {
         repo.destroyListener();
     }
 
-    @Override
-    public void likePost(Post post) {
-        repo.likePost(post);
-    }
 }

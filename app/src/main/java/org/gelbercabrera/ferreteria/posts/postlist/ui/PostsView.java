@@ -10,5 +10,4 @@ public interface PostsView {
     void updatePost(Post post);
 
     void makePost();
-    void likePost(Post post);
 }

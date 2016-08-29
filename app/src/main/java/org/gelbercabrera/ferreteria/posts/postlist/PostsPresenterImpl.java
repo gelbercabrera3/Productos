@@ -41,11 +41,6 @@ public class PostsPresenterImpl implements  PostsPresenter{
     }
 
     @Override
-    public void likePost(Post post) {
-        interactor.likePost(post);
-    }
-
-    @Override
     @Subscribe
     public void onEventMainThread(PostsListEvent event) {
         Post post = event.getPost();
